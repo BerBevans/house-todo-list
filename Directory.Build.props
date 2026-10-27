@@ -1,0 +1,35 @@
+<Project>
+  <!--
+    Shared build settings for every project. Human-owned: agents can't change this file, and CI's
+    BuildSettings.targets fails the build if a project weakens these settings.
+  -->
+
+  <!-- The compiler and analysers as first reviewer. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisMode>All</AnalysisMode>
+    <!-- Needed for IDE0005 (unused usings) to run in the build. CS1591 is turned off in .editorconfig. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Packages: central versions, lock files, and an audit that fails on any known vulnerability. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- GitHub Actions sets CI=true, so a restore there fails if a lock file is out of date. -->
+    <RestoreLockedMode Condition="'$(CI)' == 'true'">true</RestoreLockedMode>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+  </PropertyGroup>
+
+  <!-- Thresholds for Sonar's size and complexity rules (S104, S138, S3776). -->
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory).github/SonarLint.xml" Link="SonarLint.xml" />
+  </ItemGroup>
+</Project>

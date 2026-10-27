@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    The package allowlist. A PackageReference with no version here fails the build. Human-owned:
+    a new package ID needs the package-approved label; Dependabot's version bumps don't.
+  -->
+
+  <!-- Analysers, referenced by every project. -->
+  <ItemGroup>
+    <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.35.0.4138" />
+  </ItemGroup>
+
+  <!-- Tests. The versions the harness's sample is proven with; Dependabot bumps them from here. -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+</Project>
