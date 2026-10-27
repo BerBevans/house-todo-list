@@ -1,4 +1,4 @@
-# Copied from harness-poc's templates/CODEOWNERS.example (v0.3.0). Keep it in step with the
+# Copied from harness-poc's templates/CODEOWNERS.example (v0.4.0). Keep it in step with the
 # template: guardrail paths and the product and architecture docs need my review.
 
 # Guardrail files, at any depth.

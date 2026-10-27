@@ -1,0 +1,45 @@
+# The checks that run the PR's code: build settings, tests, coverage and mutation testing. They run
+# on pull_request, never pull_request_target, because they build and run the PR. The guardrail path
+# check stops a PR changing this workflow.
+name: Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - uses: BerBevans/harness-poc/actions/build-and-test@v0.4.0
+        with:
+          solution: HouseTodoList.slnx
+          override-user-ids: 19948387
+  mutation-test:
+    name: Mutation testing
+    # Skipping on push is safe; a job-level if that skipped label events would pass a required check.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - uses: BerBevans/harness-poc/actions/mutation-test@v0.4.0
+        with:
+          solution: HouseTodoList.slnx
+          override-user-ids: 19948387
