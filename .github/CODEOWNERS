@@ -1,0 +1,26 @@
+# Copied from harness-poc's templates/CODEOWNERS.example (v0.3.0). Keep it in step with the
+# template: guardrail paths and the product and architecture docs need my review.
+
+# Guardrail files, at any depth.
+.editorconfig                   @BerBevans
+*.globalconfig                  @BerBevans
+*.runsettings                   @BerBevans
+Directory.Build.props           @BerBevans
+Directory.Build.targets         @BerBevans
+Directory.Packages.props        @BerBevans
+nuget.config                    @BerBevans
+NuGet.config                    @BerBevans
+NuGet.Config                    @BerBevans
+global.json                     @BerBevans
+**/.config/dotnet-tools.json    @BerBevans
+stryker-config.json             @BerBevans
+stryker-config.yml              @BerBevans
+stryker-config.yaml             @BerBevans
+.github/                        @BerBevans
+.claude/                        @BerBevans
+*.ArchitectureTests/            @BerBevans
+
+# Product and architecture docs. Agents may propose changes; the owner approves them.
+/docs/product.md                @BerBevans
+/ARCHITECTURE.md                @BerBevans
+/docs/adr/                      @BerBevans

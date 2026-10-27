@@ -1,0 +1,13 @@
+# Opens PRs for new package versions and new GitHub Actions versions, including harness releases.
+# Each PR goes through the same checks as an agent's, and needs a code owner because the versions
+# live in guardrail files.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

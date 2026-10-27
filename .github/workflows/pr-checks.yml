@@ -1,0 +1,36 @@
+# The checks that must not run the PR's code: guardrail paths, suppressions and PR size. They run
+# on pull_request_target, so the workflow comes from main and a PR can't change its own checks.
+# Each action reads the PR from the API and refuses any other event.
+name: PR checks
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  pull-requests: read
+  issues: read
+
+jobs:
+  guardrail-paths:
+    name: Guardrail paths
+    runs-on: ubuntu-latest
+    steps:
+      - uses: BerBevans/harness-poc/actions/guardrail-paths@v0.3.0
+        with:
+          exempt-user-ids: 19948387
+  suppression-scan:
+    name: Suppression scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: BerBevans/harness-poc/actions/suppression-scan@v0.3.0
+        with:
+          exempt-user-ids: 19948387
+  pr-size:
+    name: PR size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: BerBevans/harness-poc/actions/pr-size@v0.3.0
+        with:
+          exempt-user-ids: 19948387
+          override-user-ids: 19948387
