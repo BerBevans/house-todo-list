@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Code that talks to a boundary (SQLite through EF Core). Tested by HouseTodoList.IntegrationTests only. -->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HouseTodoList.Core\HouseTodoList.Core.csproj" />
+  </ItemGroup>
+</Project>
