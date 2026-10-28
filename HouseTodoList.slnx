@@ -1,2 +1,12 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HouseTodoList.Adapters/HouseTodoList.Adapters.csproj" />
+    <Project Path="src/HouseTodoList.Core/HouseTodoList.Core.csproj" />
+    <Project Path="src/HouseTodoList.Web/HouseTodoList.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HouseTodoList.ArchitectureTests/HouseTodoList.ArchitectureTests.csproj" />
+    <Project Path="tests/HouseTodoList.IntegrationTests/HouseTodoList.IntegrationTests.csproj" />
+    <Project Path="tests/HouseTodoList.UnitTests/HouseTodoList.UnitTests.csproj" />
+  </Folder>
 </Solution>

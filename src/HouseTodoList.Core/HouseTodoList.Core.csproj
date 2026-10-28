@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Domain, use cases and ports. References nothing else in the solution: see ARCHITECTURE.md. -->
+</Project>
