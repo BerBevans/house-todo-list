@@ -1,6 +1,6 @@
 # 0001. One Razor Pages app on a VPS with Docker Compose
 
-- Status: accepted
+- Status: superseded by [ADR 0006](0006-razor-pages-app-on-a-vps-behind-cloudflare-tunnel.md)
 - Date: 2026-10-28
 
 ## Context

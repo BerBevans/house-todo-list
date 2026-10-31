@@ -1,6 +1,6 @@
 # 0004. Google sign-in with a member allowlist
 
-- Status: accepted
+- Status: superseded by [ADR 0007](0007-cloudflare-access-identity-with-a-member-allowlist.md)
 - Date: 2026-10-28
 
 ## Context
