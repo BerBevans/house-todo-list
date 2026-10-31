@@ -18,10 +18,10 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.14" />
   </ItemGroup>
 
-  <!-- Product: storage, sign-in. Approved in the architecture session (ADRs 0002, 0004). -->
+  <!-- Product: storage, identity. Approved in the architecture sessions (ADRs 0002, 0007). -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.14" />
   </ItemGroup>
 </Project>
