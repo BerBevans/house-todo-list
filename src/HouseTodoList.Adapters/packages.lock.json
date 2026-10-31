@@ -349,10 +349,7 @@
         }
       },
       "housetodolist.core": {
-        "type": "Project",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Sqlite": "[10.0.14, )"
-        }
+        "type": "Project"
       }
     }
   }

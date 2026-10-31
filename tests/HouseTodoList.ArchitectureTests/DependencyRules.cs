@@ -14,7 +14,7 @@ public class DependencyRules
     private const string WebName = "HouseTodoList.Web";
     private const string CompositionRoot = WebName + ".Program";
 
-    // Boundary libraries: only HouseTodoList.Adapters (storage) and HouseTodoList.Web (HTTP, sign-in) may use them.
+    // Boundary libraries: only HouseTodoList.Adapters (storage) and HouseTodoList.Web (HTTP, identity) may use them.
     private static readonly string[] StorageNamespaces =
     [
         "Microsoft.EntityFrameworkCore",
@@ -26,6 +26,12 @@ public class DependencyRules
     [
         "Microsoft.AspNetCore",
         "System.Net.Http",
+    ];
+
+    private static readonly string[] TokenNamespaces =
+    [
+        "Microsoft.IdentityModel",
+        "System.IdentityModel",
     ];
 
     private static readonly Assembly Core = Assembly.Load(CoreName);
@@ -43,15 +49,15 @@ public class DependencyRules
     }
 
     [Fact]
-    public void CoreDoesNotDependOnStorageOrHostLibraries()
+    public void CoreDoesNotDependOnStorageHostOrTokenLibraries()
     {
         var result = Types.InAssembly(Core)
-            .ShouldNot().HaveDependencyOnAny([.. StorageNamespaces, .. HostNamespaces])
+            .ShouldNot().HaveDependencyOnAny([.. StorageNamespaces, .. HostNamespaces, .. TokenNamespaces])
             .GetResult();
 
         AssertRule(
             result,
-            $"{CoreName} must not use EF Core, SQLite, ASP.NET Core or HttpClient. Put boundary code in {AdaptersName} behind a port in {CoreName}.");
+            $"{CoreName} must not use EF Core, SQLite, ASP.NET Core, token libraries or HttpClient. Put boundary code in {AdaptersName} behind a port in {CoreName}; token validation stays in {WebName}.");
     }
 
     [Fact]
