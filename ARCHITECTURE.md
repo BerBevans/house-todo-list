@@ -7,7 +7,8 @@ One ASP.NET Core app (Razor Pages, rendered on the server) stores the house's jo
 ## Deployables
 
 - `HouseTodoList.Web`: the app, one container on the VPS. One instance only.
-- `cloudflared` and Litestream: off-the-shelf containers in the same Compose stack, configured, not coded. `cloudflared` connects outbound to Cloudflare; the app's port is never published on the host, and the VPS accepts no inbound connections (ADR 0006).
+- Litestream: an off-the-shelf container in the same Compose stack, configured, not coded.
+- `cloudflared`: installed on the host as a system service, outside Compose, so SSH through the tunnel survives a broken Docker. It connects outbound to Cloudflare; the app's port is published on the loopback address only, and the VPS accepts no inbound connections (ADR 0006).
 
 ## Projects and dependency rules
 
