@@ -2,6 +2,7 @@
 
 - Status: accepted
 - Date: 2026-10-31
+- Amended: 2026-11-01 (the Google OAuth client and the Access policy rule; see the note at the end)
 - Supersedes: [ADR 0004](0004-google-sign-in-with-a-member-allowlist.md)
 
 ## Context
@@ -32,7 +33,7 @@ Without Cloudflare in front, for local development, unit tests and the black-box
 
 ## Alternatives considered
 
-- Keep Google sign-in in the app (ADR 0004): a second sign-in behind Access, and a Google OAuth client to set up and protect.
+- Keep Google sign-in in the app (ADR 0004): a second sign-in behind Access, and the app holding and protecting a Google OAuth client secret.
 - Access alone, with its policy listing the members' emails: no authentication code in the app, but the member list sits in Cloudflare outside the repo, and #14 and job assignment can't be built in the app.
 - Trust the `Cf-Access-Authenticated-User-Email` header: anything that reaches the app's port without going through Access could claim any email.
 - A sign-in bypass registered only in Development: a bypass living in production code, and the black-box suite would still need real tokens.
@@ -40,4 +41,8 @@ Without Cloudflare in front, for local development, unit tests and the black-box
 
 ## Consequences
 
-No passwords, no OAuth client and no session cookie of our own, and the one code path that checks identity is the same in production and in tests. The app depends on Cloudflare Access, and a misconfigured audience or issuer locks everyone out, which the first deploy must check. The Access policy must stay "any Google account": narrowing it in Cloudflare would quietly override the app's member list. A member without a Google account means adding another identity provider in Access, not in the app.
+No passwords and no session cookie of our own, and the one code path that checks identity is the same in production and in tests. Access's Google login still needs a Google OAuth client, but its secret is held in Cloudflare, never in the app or the repo. The app depends on Cloudflare Access, and a misconfigured audience or issuer locks everyone out, which the first deploy must check. The Access policy must stay "any Google account", written as an Allow rule on the Google login method rather than "Everyone", so that adding another login method later doesn't quietly let it in. Narrowing the policy in Cloudflare would quietly override the app's member list. A member without a Google account means adding another identity provider in Access, not in the app.
+
+## Amendment, 2026-11-01
+
+As first written, the consequences said there was no OAuth client. Setting up Access showed that its Google login needs one, created in Google Cloud and published to production so that any Google account can sign in. Its secret lives in Cloudflare, so the app still holds none. The policy rule was also made explicit. The decision is unchanged.
