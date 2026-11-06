@@ -1,4 +1,4 @@
-# Copied from harness-poc's templates/CODEOWNERS.example (v0.8.0). Keep it in step with the
+# Copied from harness-poc's templates/CODEOWNERS.example (v0.9.0). Keep it in step with the
 # template: guardrail paths and the product and architecture docs need my review.
 
 # Guardrail files, at any depth.
@@ -27,6 +27,7 @@ Containerfile.*                 @BerBevans
 .containerignore                @BerBevans
 .github/                        @BerBevans
 .claude/                        @BerBevans
+deploy/                         @BerBevans
 *.ArchitectureTests/            @BerBevans
 
 # Product and architecture docs. Agents may propose changes; the owner approves them.

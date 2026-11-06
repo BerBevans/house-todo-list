@@ -1,0 +1,3 @@
+# The deploy user's ~/.ssh/authorized_keys: one line, the deploy key's public half after the options.
+# `restrict` turns off forwarding, the pty and user rc files; `command` replaces whatever the client asks for.
+restrict,command="/usr/local/bin/house-todo-deploy-request" ssh-ed25519 AAAA...replace-me... house-todo-deploy

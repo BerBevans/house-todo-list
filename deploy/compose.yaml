@@ -1,0 +1,27 @@
+# The production stack. Installed by hand at /opt/house-todo/compose.yaml; this is the reference copy.
+# The deploy script writes APP_DIGEST to /opt/house-todo/.env. Nothing in CI changes this file.
+name: house-todo
+
+services:
+  app:
+    image: ghcr.io/berbevans/house-todo-list@${APP_DIGEST:?APP_DIGEST is not set}
+    restart: unless-stopped
+    # Loopback only: cloudflared on the host is the way in. Docker's published ports bypass ufw.
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    volumes:
+      - data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  # Will hold the SQLite file and the Data Protection keys. The image makes /data owned by the app's
+  # user (UID 1654), and a new named volume takes that ownership.
+  data:
