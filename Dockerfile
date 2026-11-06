@@ -18,12 +18,16 @@ RUN dotnet restore src/HouseTodoList.Web/HouseTodoList.Web.csproj
 
 COPY src/ src/
 RUN dotnet publish src/HouseTodoList.Web/HouseTodoList.Web.csproj --no-restore -c Release -o /app
+# The data folder, made here because the runtime image has no shell. A new volume mounted on it
+# takes its ownership, so the app's user can write there.
+RUN mkdir /data
 
 # Chiseled: no shell or package manager, and it runs as the non-root `app` user. The extra variant
 # carries ICU and time zone data, for British dates and times.
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra@sha256:a9298ccc39c6258ae71228479e2f3f8d2ceb6639a9927262a4b0ff7d319a0e7e
 WORKDIR /app
 COPY --from=build /app .
+COPY --from=build --chown=1654:1654 /data /data
 USER app
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "HouseTodoList.Web.dll"]

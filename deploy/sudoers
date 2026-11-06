@@ -1,0 +1,4 @@
+# The deploy user may run the deploy script as root and nothing else. The script checks its own
+# argument. Installed by hand at /etc/sudoers.d/house-todo-deploy, owned by root, mode 0440;
+# check it with `visudo -cf` before installing.
+deploy ALL=(root) NOPASSWD: /usr/local/sbin/house-todo-deploy

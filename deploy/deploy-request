@@ -1,0 +1,13 @@
+#!/bin/sh
+# The deploy user's forced command: SSH runs this whatever the client asked for, and the client's
+# request arrives in SSH_ORIGINAL_COMMAND. Only an image digest is accepted. Installed by hand at
+# /usr/local/bin/house-todo-deploy-request, owned by root, mode 0755.
+set -eu
+
+digest="${SSH_ORIGINAL_COMMAND:-}"
+if ! printf '%s' "$digest" | grep -Eqx 'sha256:[0-9a-f]{64}'; then
+  echo "Refused: send only an image digest (sha256: and 64 lowercase hex characters)." >&2
+  exit 2
+fi
+
+exec sudo -n /usr/local/sbin/house-todo-deploy "$digest"

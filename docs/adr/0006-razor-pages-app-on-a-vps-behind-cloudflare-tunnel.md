@@ -36,3 +36,7 @@ Small pages, no client build, one image to deploy, and nothing on the VPS that t
 ## Amendment, 2026-11-01
 
 As first written, `cloudflared` ran in the Compose stack and also routed SSH to `localhost:22`. The two don't fit: in a container, `localhost` is the container. Found while setting up the VPS, before anything was deployed. `cloudflared` moved to the host, so the app's port is published on loopback for it to reach. The decision itself, one app behind Tunnel with no inbound ports, is unchanged.
+
+## Amendment, 2026-11-06: deploys
+
+A push to `main` builds the image, pushes it to GHCR (public, so the server pulls without credentials) and deploys it through the tunnel. The workflow SSHs in as a `deploy` user with an Access service token. That user's key has a forced command that accepts only an image digest and runs one root script through one `sudo` rule. The script pulls, restarts, checks `/healthz` on loopback and rolls back to the previous digest if the new one isn't healthy. The Compose file lives on the server, installed by hand from `deploy/`, so nothing in a PR or CI run can change ports, volumes or secrets. The workflow moves `live` only after a healthy deploy, with a token from a deploy App that is the only bypass actor on the tag's ruleset. Rejected: the server pulling images itself (GitHub never learns whether it deployed, so `live` can't move safely) and a self-hosted runner (it would run PR code on production on a public repo).

@@ -1,0 +1,68 @@
+#!/bin/bash
+# Deploys one digest of ghcr.io/berbevans/house-todo-list, checks it's healthy, and puts the previous
+# digest back if it isn't. Runs as root through the deploy user's sudo rule. Installed by hand at
+# /usr/local/sbin/house-todo-deploy, owned by root, mode 0755.
+#
+# Its output goes back to the workflow's job log, which is public, so it never prints container logs.
+# Exit codes: 0 deployed, 1 failed (rolled back if possible), 2 refused, 3 another deploy is running.
+set -euo pipefail
+
+readonly STACK=/opt/house-todo
+readonly ENV_FILE="$STACK/.env"
+readonly HEALTH_URL=http://127.0.0.1:8080/healthz
+readonly WAIT_SECONDS=60
+
+digest="${1:-}"
+if [[ $# -ne 1 || ! "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+  echo "Refused: expected one image digest." >&2
+  exit 2
+fi
+
+exec 9>/run/lock/house-todo-deploy.lock
+flock -n 9 || { echo "Another deploy is running." >&2; exit 3; }
+
+compose() { docker compose --project-directory "$STACK" "$@"; }
+
+healthy() {
+  local deadline=$((SECONDS + WAIT_SECONDS))
+  while ((SECONDS < deadline)); do
+    if [[ "$(curl -fsS --max-time 2 "$HEALTH_URL" 2>/dev/null)" == Healthy ]]; then return 0; fi
+    sleep 2
+  done
+  return 1
+}
+
+run_digest() {
+  printf 'APP_DIGEST=%s\n' "$1" > "$ENV_FILE.new"
+  mv "$ENV_FILE.new" "$ENV_FILE"
+  compose up -d --remove-orphans
+}
+
+previous=""
+if [[ -f "$ENV_FILE" ]]; then previous="$(sed -n 's/^APP_DIGEST=//p' "$ENV_FILE")"; fi
+
+# Pull before touching anything, so a digest that doesn't exist leaves the running app alone.
+echo "Pulling $digest"
+APP_DIGEST="$digest" compose pull --quiet app
+
+echo "Starting $digest"
+run_digest "$digest"
+if healthy; then
+  echo "Deployed $digest: healthy."
+  exit 0
+fi
+
+echo "Not healthy after ${WAIT_SECONDS}s. See 'docker compose --project-directory $STACK logs app' on the server." >&2
+if [[ -z "$previous" || "$previous" == "$digest" ]]; then
+  echo "No previous version to roll back to: the app is down." >&2
+  exit 1
+fi
+
+echo "Rolling back to $previous" >&2
+run_digest "$previous"
+if healthy; then
+  echo "Rolled back to $previous: healthy. The new version was not deployed." >&2
+else
+  echo "Rollback to $previous is not healthy either: the app is down." >&2
+fi
+exit 1
