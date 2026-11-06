@@ -1,0 +1,13 @@
+# Human-owned: agents can't change this file.
+# An allowlist: only what the Dockerfile needs goes into the build context. Tests stay out, so test
+# code such as the stub token issuer can't reach the production image.
+*
+!global.json
+!nuget.config
+!Directory.Build.props
+!Directory.Packages.props
+!.editorconfig
+!.github/SonarLint.xml
+!src/
+**/bin/
+**/obj/

@@ -5,12 +5,19 @@ namespace HouseTodoList.Web;
 /// </summary>
 internal static class Program
 {
+    /// <summary>The liveness endpoint the deploy calls on the server's loopback address.</summary>
+    internal const string HealthPath = "/healthz";
+
     public static Task Main(string[] args) => BuildApp(args).RunAsync();
 
     /// <summary>Registers the services and builds the app. Unit tests call this directly.</summary>
     internal static WebApplication BuildApp(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        return builder.Build();
+        builder.Services.AddHealthChecks();
+
+        var app = builder.Build();
+        app.MapHealthChecks(HealthPath);
+        return app;
     }
 }
