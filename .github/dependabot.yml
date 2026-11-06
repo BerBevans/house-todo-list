@@ -1,8 +1,15 @@
-# Opens PRs for new package versions, new base image digests and new GitHub Actions versions,
-# including harness releases.
-# Each PR goes through the same checks as an agent's, and needs a code owner because the versions
-# live in guardrail files.
+# Opens PRs for new package versions, new SDK and base image versions, and new GitHub Actions
+# versions, including harness releases. Each PR goes through the same checks as an agent's, and
+# needs a code owner because the versions live in guardrail files.
 version: 2
+
+# The SDK in global.json and the images in the Dockerfile must move together: an image whose SDK
+# doesn't satisfy global.json fails to build. One group puts both in the same PR.
+multi-ecosystem-groups:
+  sdk-and-images:
+    schedule:
+      interval: weekly
+
 updates:
   - package-ecosystem: nuget
     directory: /
@@ -12,7 +19,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+  - package-ecosystem: dotnet-sdk
+    directory: /
+    patterns: ["*"]
+    multi-ecosystem-group: sdk-and-images
   - package-ecosystem: docker
     directory: /
-    schedule:
-      interval: weekly
+    patterns: ["*"]
+    multi-ecosystem-group: sdk-and-images
