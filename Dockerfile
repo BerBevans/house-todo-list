@@ -3,7 +3,7 @@
 # token issuer, are left out of the build context by .dockerignore and never reach this image.
 # Base images are pinned by digest; Dependabot moves them.
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0.203-noble@sha256:8a90a473da5205a16979de99d2fc20975e922c68304f5c79d564e666dc3982fc AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.403-noble@sha256:212fe4cb74627d5adf9817a4088906ae3edff1bd853bb27565d4b46731efe61e AS build
 WORKDIR /repo
 # CI=true makes the restore fail if a lock file is out of date, as it does in GitHub Actions.
 ENV CI=true DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1
