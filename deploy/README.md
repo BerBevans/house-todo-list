@@ -35,16 +35,23 @@ and they're guardrails: changing one needs the owner's review, then installing a
    sudo install -d -m 0700 -o deploy -g deploy /home/deploy/.ssh
    ```
 
-4. Make the deploy key, in WSL, with no passphrase. The private half goes only to GitHub:
-
-   ```sh
-   ssh-keygen -t ed25519 -N "" -C house-todo-deploy -f ~/.ssh/house_todo_deploy
-   gh secret set DEPLOY_SSH_KEY --env production -R BerBevans/house-todo-list < ~/.ssh/house_todo_deploy
-   shred -u ~/.ssh/house_todo_deploy
-   ```
+4. Make the deploy key, in WSL, with no passphrase:
+   `ssh-keygen -t ed25519 -N "" -C house-todo-deploy -f ~/.ssh/house_todo_deploy`.
 
    On the server, write `/home/deploy/.ssh/authorized_keys` as in `authorized_keys.example`, with the
    contents of `~/.ssh/house_todo_deploy.pub` after the options. Owner `deploy`, mode 0600.
+
+   Check the forced command while the private half is still here. Your own Access login gets you
+   through the tunnel, and anything but a digest must be refused:
+   `ssh -i ~/.ssh/house_todo_deploy -l deploy house-todo ls` prints `Refused: ...` and exits 2.
+
+   Then the private half goes only to GitHub. The `production` environment must exist first (step 8,
+   Settings > Environments > New environment):
+
+   ```sh
+   gh secret set DEPLOY_SSH_KEY --env production -R BerBevans/house-todo-list < ~/.ssh/house_todo_deploy
+   shred -u ~/.ssh/house_todo_deploy
+   ```
 
 ### In Cloudflare Zero Trust
 
@@ -73,4 +80,4 @@ and they're guardrails: changing one needs the owner's review, then installing a
 - Deploy a good commit: the workflow passes, the app answers, and `live` points at the commit.
 - Deploy a broken image (one that never answers `/healthz`): the workflow fails, the previous version
   is running again, and `live` hasn't moved.
-- From WSL, `ssh -i <deploy key> deploy@<SSH hostname> ls` is refused: only a digest is accepted.
+- The deploy key refuses anything but a digest. That's checked in step 4, before the key is shredded.
