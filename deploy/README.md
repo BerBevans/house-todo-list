@@ -58,7 +58,19 @@ and they're guardrails: changing one needs the owner's review, then installing a
 5. Access > Service credentials > Service Tokens: create `house-todo-deploy`. Note the client ID and
    secret; the secret is shown once.
 6. On the `house-todo SSH` application, add a policy: action Service Auth, include Service Token
-   `house-todo-deploy`. Leave the existing email policy as it is.
+   `house-todo-deploy`. Leave the existing email policy as it is. Press Save on the application:
+   until then the policy isn't attached, and the deploy fails with `websocket: bad handshake`.
+
+   Check it from WSL without the values reaching your shell history:
+
+   ```sh
+   read -rp "SSH hostname: " HOST; read -rp "Client ID: " CFID; read -rsp "Client Secret: " CFSEC; echo
+   curl -s -o /dev/null -w '%{http_code}\n' -H "CF-Access-Client-Id: $CFID" \
+     -H "CF-Access-Client-Secret: $CFSEC" "https://$HOST"
+   unset HOST CFID CFSEC
+   ```
+
+   A 302 to the login page or a 403 means Access refused the token; anything else means it got through.
 
 ### In GitHub
 
@@ -78,6 +90,13 @@ and they're guardrails: changing one needs the owner's review, then installing a
 ## Checking it
 
 - Deploy a good commit: the workflow passes, the app answers, and `live` points at the commit.
-- Deploy a broken image (one that never answers `/healthz`): the workflow fails, the previous version
-  is running again, and `live` hasn't moved.
+- Deploy a broken image (one that never answers `/healthz`): the script exits 1, the previous version
+  is running again, and `live` hasn't moved. Production takes only `main`, so do this by hand rather
+  than through the workflow:
+  - build an image from the running one with `ENV ASPNETCORE_HTTP_PORTS=9999` added, for
+    `linux/amd64`, and push it to the package with a throwaway tag
+  - on the server, run `sudo /usr/local/sbin/house-todo-deploy` with its digest
+  - then delete that version from the package and the image from the server
+
+  The workflow's side, that a failed deploy step skips moving `live`, is ordinary step behaviour.
 - The deploy key refuses anything but a digest. That's checked in step 4, before the key is shredded.
