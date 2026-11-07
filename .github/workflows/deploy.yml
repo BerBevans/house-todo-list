@@ -1,0 +1,95 @@
+# Deploys every push to main, and on demand. The image job builds and pushes the image to GHCR. The
+# deploy job runs in the production Environment, the only place the server and App secrets exist:
+# it SSHs through Cloudflare Access as the deploy user, whose forced command accepts only a digest,
+# then moves the live tag. The server rolls back by itself if the new version isn't healthy, and
+# then live doesn't move. See deploy/README.md and ADR 0006.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time, in order. A deploy is never cancelled halfway.
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  image:
+    name: Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v4
+      - id: push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          pull: true
+          push: true
+          tags: ghcr.io/berbevans/house-todo-list:${{ github.sha }}
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+
+  deploy:
+    name: Deploy
+    needs: image
+    runs-on: ubuntu-latest
+    environment: production
+    permissions: {}
+    steps:
+      - name: Install cloudflared
+        run: |
+          curl -fsSL https://pkg.cloudflare.com/cloudflare-public-v2.gpg | sudo tee /usr/share/keyrings/cloudflare-public-v2.gpg > /dev/null
+          echo 'deb [signed-by=/usr/share/keyrings/cloudflare-public-v2.gpg] https://pkg.cloudflare.com/cloudflared any main' | sudo tee /etc/apt/sources.list.d/cloudflared.list > /dev/null
+          sudo apt-get update -qq && sudo apt-get install -y -qq cloudflared
+
+      - name: Deploy the image
+        env:
+          DIGEST: ${{ needs.image.outputs.digest }}
+          SSH_HOST: ${{ vars.DEPLOY_SSH_HOST }}
+          SSH_KNOWN_HOSTS: ${{ vars.DEPLOY_SSH_KNOWN_HOSTS }}
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          # cloudflared reads the Access service token from these.
+          TUNNEL_SERVICE_TOKEN_ID: ${{ secrets.ACCESS_SERVICE_TOKEN_ID }}
+          TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.ACCESS_SERVICE_TOKEN_SECRET }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o ProxyCommand="cloudflared access ssh --hostname %h" \
+            "deploy@$SSH_HOST" "$DIGEST"
+
+      - id: token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.DEPLOY_APP_CLIENT_ID }}
+          private-key: ${{ secrets.DEPLOY_APP_PRIVATE_KEY }}
+
+      # Only the deploy App may move live: the tag ruleset has it as the only bypass actor.
+      - name: Move live
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          if gh api "repos/$REPO/git/ref/tags/live" > /dev/null 2>&1; then
+            gh api -X PATCH "repos/$REPO/git/refs/tags/live" -f sha="$GITHUB_SHA" -F force=true > /dev/null
+          else
+            gh api -X POST "repos/$REPO/git/refs" -f ref=refs/tags/live -f sha="$GITHUB_SHA" > /dev/null
+          fi
+          echo "live is now $GITHUB_SHA"
