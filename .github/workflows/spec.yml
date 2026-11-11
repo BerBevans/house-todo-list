@@ -1,0 +1,30 @@
+# One round of spec refinement, started by the owner applying needs-spec or commenting on an issue
+# that has it. The agent writes files only; the spec App's token posts them after it exits.
+name: Spec
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: spec-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  spec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: BerBevans/harness-poc/actions/spec-agent@v0.12.0
+        with:
+          owner-user-ids: 19948387
+          app-slug: berbevans-factory-spec
+          app-client-id: ${{ vars.SPEC_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.SPEC_APP_PRIVATE_KEY }}
+          claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
