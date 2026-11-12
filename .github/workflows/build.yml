@@ -26,7 +26,7 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
-      - uses: BerBevans/harness-poc/actions/build-and-test@v0.12.1
+      - uses: BerBevans/harness-poc/actions/build-and-test@v0.12.2
         with:
           solution: HouseTodoList.slnx
           override-user-ids: 19948387
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
-      - uses: BerBevans/harness-poc/actions/mutation-test@v0.12.1
+      - uses: BerBevans/harness-poc/actions/mutation-test@v0.12.2
         with:
           solution: HouseTodoList.slnx
           override-user-ids: 19948387
