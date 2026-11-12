@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: BerBevans/harness-poc/actions/spec-agent@v0.12.0
+      - uses: BerBevans/harness-poc/actions/spec-agent@v0.12.1
         with:
           owner-user-ids: 19948387
           app-slug: berbevans-factory-spec
