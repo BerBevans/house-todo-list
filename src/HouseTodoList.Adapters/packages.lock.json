@@ -4,20 +4,20 @@
     "net10.0": {
       "Microsoft.EntityFrameworkCore.Design": {
         "type": "Direct",
-        "requested": "[10.0.14, )",
-        "resolved": "10.0.14",
-        "contentHash": "hRaYw8yzhpGq3Yz9apZrr/tp6FeBDUiAq4zJELRxQH1J1PfSBb2uGZoXlOL6EoSB3/M+OMpIjHDH0aOfgwyUUQ==",
+        "requested": "[10.0.15, )",
+        "resolved": "10.0.15",
+        "contentHash": "qCTGE4sLT4BJECCedcx5AYXlj9cc3mDgtWyxyeGAQxxpxSFh0nJ0tb/8djU/nVdtILlrXSWAisMeMOIFfPO1WA==",
         "dependencies": {
           "Humanizer.Core": "2.14.1",
           "Microsoft.Build.Framework": "18.0.2",
           "Microsoft.CodeAnalysis.CSharp": "5.0.0",
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "5.0.0",
           "Microsoft.CodeAnalysis.Workspaces.MSBuild": "5.0.0",
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.14",
-          "Microsoft.Extensions.Caching.Memory": "10.0.14",
-          "Microsoft.Extensions.Configuration.Abstractions": "10.0.14",
-          "Microsoft.Extensions.DependencyModel": "10.0.14",
-          "Microsoft.Extensions.Logging": "10.0.14",
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.15",
+          "Microsoft.Extensions.Caching.Memory": "10.0.15",
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.15",
+          "Microsoft.Extensions.DependencyModel": "10.0.15",
+          "Microsoft.Extensions.Logging": "10.0.15",
           "Mono.TextTemplating": "3.0.0",
           "Newtonsoft.Json": "13.0.4"
         }
