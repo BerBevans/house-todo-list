@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: BerBevans/harness-poc/actions/spec-agent@v0.12.2
+      - uses: BerBevans/harness-poc/actions/spec-agent@v0.13.0
         with:
           owner-user-ids: 19948387
-          app-slug: berbevans-factory-spec
+          factory-app-slugs: berbevans-factory-spec,berbevans-factory-implementer
           app-client-id: ${{ vars.SPEC_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.SPEC_APP_PRIVATE_KEY }}
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
