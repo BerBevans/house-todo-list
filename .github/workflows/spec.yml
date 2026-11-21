@@ -21,10 +21,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: BerBevans/harness-poc/actions/spec-agent@v0.13.0
+      - uses: BerBevans/harness-poc/actions/spec-agent@v0.14.0
         with:
           owner-user-ids: 19948387
           factory-app-slugs: berbevans-factory-spec,berbevans-factory-implementer
           app-client-id: ${{ vars.SPEC_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.SPEC_APP_PRIVATE_KEY }}
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          otel-endpoint: ${{ vars.GRAFANA_OTLP_ENDPOINT }}
+          otel-headers: ${{ secrets.GRAFANA_OTLP_HEADERS }}
