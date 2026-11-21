@@ -16,12 +16,22 @@ updates:
     schedule:
       interval: weekly
     # These packages follow the .NET version: their next major needs .NET 11. Moved by hand with
-    # the SDK.
+    # the SDK. dotnet-ef is the EF Core tool in .config/dotnet-tools.json and must match EF Core.
     ignore:
       - dependency-name: "Microsoft.AspNetCore.*"
         update-types: ["version-update:semver-major"]
       - dependency-name: "Microsoft.EntityFrameworkCore.*"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "dotnet-ef"
+        update-types: ["version-update:semver-major"]
+    # .NET servicing releases move these together each month. Dependabot updates only the lock
+    # file of the project that references a package directly, not the downstream projects that
+    # lock it as CentralTransitive, so each such PR needs `dotnet restore --force-evaluate` by
+    # hand. One group means one PR to fix a month.
+    groups:
+      dotnet-servicing:
+        patterns: ["Microsoft.AspNetCore.*", "Microsoft.EntityFrameworkCore.*", "dotnet-ef"]
+        update-types: ["minor", "patch"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
