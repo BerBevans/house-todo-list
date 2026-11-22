@@ -16,21 +16,30 @@ jobs:
     name: Guardrail paths
     runs-on: ubuntu-latest
     steps:
-      - uses: BerBevans/harness-poc/actions/guardrail-paths@v0.14.3
+      - uses: BerBevans/harness-poc/actions/guardrail-paths@v0.14.4
         with:
           exempt-user-ids: 19948387
   suppression-scan:
     name: Suppression scan
     runs-on: ubuntu-latest
     steps:
-      - uses: BerBevans/harness-poc/actions/suppression-scan@v0.14.3
+      - uses: BerBevans/harness-poc/actions/suppression-scan@v0.14.4
         with:
           exempt-user-ids: 19948387
   pr-size:
     name: PR size
     runs-on: ubuntu-latest
     steps:
-      - uses: BerBevans/harness-poc/actions/pr-size@v0.14.3
+      - uses: BerBevans/harness-poc/actions/pr-size@v0.14.4
         with:
           exempt-user-ids: 19948387
           override-user-ids: 19948387
+  reset-overrides:
+    # Required: the checks ignore override labels only on the push itself, so without this job a
+    # stale label would count again on the next event, such as an unrelated label or a reopen.
+    name: Reset override labels
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: BerBevans/harness-poc/actions/reset-overrides@v0.14.4
