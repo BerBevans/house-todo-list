@@ -16,30 +16,31 @@ jobs:
     name: Guardrail paths
     runs-on: ubuntu-latest
     steps:
-      - uses: BerBevans/harness-poc/actions/guardrail-paths@v0.14.5
+      - uses: BerBevans/harness-poc/actions/guardrail-paths@v0.15.0
         with:
           exempt-user-ids: 19948387
   suppression-scan:
     name: Suppression scan
     runs-on: ubuntu-latest
     steps:
-      - uses: BerBevans/harness-poc/actions/suppression-scan@v0.14.5
+      - uses: BerBevans/harness-poc/actions/suppression-scan@v0.15.0
         with:
           exempt-user-ids: 19948387
   pr-size:
     name: PR size
     runs-on: ubuntu-latest
     steps:
-      - uses: BerBevans/harness-poc/actions/pr-size@v0.14.5
+      - uses: BerBevans/harness-poc/actions/pr-size@v0.15.0
         with:
           exempt-user-ids: 19948387
           override-user-ids: 19948387
   reset-overrides:
-    # Required: the checks ignore override labels only on the push itself, so without this job a
-    # stale label would count again on the next event, such as an unrelated label or a reopen.
+    # Required. Tidies override labels away after a push, so a new diff needs a fresh label. The
+    # checks don't rely on it: an override counts only with the owner's approving review of the
+    # commit the check ran on (no review needed on the owner's own non-factory branches).
     name: Reset override labels
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
-      - uses: BerBevans/harness-poc/actions/reset-overrides@v0.14.5
+      - uses: BerBevans/harness-poc/actions/reset-overrides@v0.15.0
